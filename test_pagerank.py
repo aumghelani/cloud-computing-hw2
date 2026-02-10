@@ -154,6 +154,42 @@ class TestPageRank(unittest.TestCase):
         for v in pr.values():
             self.assertGreater(v, 0)
 
+    # -- Sum of PageRanks = 1.0 (no dangling nodes) -------------------------
+    def test_sum_of_pageranks_equals_one(self):
+        """
+        When there are no dangling nodes (every page has at least one
+        outgoing link), the sum of all PageRank values must equal 1.0.
+        This is the primary correctness check recommended by the TAs.
+        """
+        # Small fully-connected graph — no dangling nodes
+        outgoing = {
+            '0.html': ['1.html', '2.html', '3.html'],
+            '1.html': ['0.html', '2.html'],
+            '2.html': ['3.html'],
+            '3.html': ['0.html', '1.html'],
+        }
+        pr, _ = pagerank(outgoing, threshold=1e-10, verbose=False)
+        self.assertAlmostEqual(sum(pr.values()), 1.0, places=4)
+
+    def test_sum_of_pageranks_larger_graph(self):
+        """
+        Same sum-to-one check on a larger graph (10 nodes, no dangling).
+        """
+        outgoing = {
+            '0.html': ['1.html', '5.html'],
+            '1.html': ['2.html', '3.html'],
+            '2.html': ['0.html', '4.html'],
+            '3.html': ['4.html', '7.html'],
+            '4.html': ['5.html'],
+            '5.html': ['6.html', '9.html'],
+            '6.html': ['7.html', '0.html'],
+            '7.html': ['8.html'],
+            '8.html': ['9.html', '3.html'],
+            '9.html': ['0.html', '1.html'],
+        }
+        pr, _ = pagerank(outgoing, threshold=1e-10, verbose=False)
+        self.assertAlmostEqual(sum(pr.values()), 1.0, places=4)
+
 
 if __name__ == '__main__':
     unittest.main()
